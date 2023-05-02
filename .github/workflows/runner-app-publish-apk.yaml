@@ -1,0 +1,142 @@
+name: Publish APK
+on:
+  workflow_call:
+    secrets:
+      SIGNING_KEY_BASE_64:
+        required: true
+      KEY_ALIAS:
+        required: true
+      STORE_PASSWORD:
+        required: true
+      KEY_PASSWORD:
+        required: true
+    # Map the workflow outputs to job outputs
+    outputs:
+      release_url:
+        description: Release url link
+        value: ${{ jobs.publish.outputs.release_url }}
+      staging_url:
+          description: Staging url link
+          value: ${{ jobs.publish.outputs.staging_url }}
+env:
+  STAGING_APK_PATH: app/build/outputs/apk/staging/app-staging.apk
+  RELEASE_APK_PATH: app/build/outputs/apk/release/app-release.apk
+
+jobs:
+
+  publish:
+    name: Release Android APK
+    runs-on: ubuntu-latest
+    # Map the job outputs to step outputs
+    outputs:
+      staging_url: ${{ steps.upload-staging-asset.outputs.url }}
+      release_url: ${{ steps.upload-release-asset.outputs.url }}
+
+
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+      - name: Cache Gradle and wrapper
+        uses: actions/cache@v3.0.4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant Permission for Gradlew to Execute
+        run: chmod +x ./gradlew
+
+      - name: Generate staging APK
+        run: ./gradlew assembleStaging
+
+      - name: Generate release APK
+        run: ./gradlew assembleRelease
+      - name: Signing staging APK
+        id: sign-staging
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: ${{ env.STAGING_APK_PATH }}
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE_64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "30.0.2"
+
+      - name: Signing app Release APK
+        uses: r0adkll/sign-android-release@v1
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE_64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          # override default build-tools version (29.0.3) -- optional
+          BUILD_TOOLS_VERSION: "30.0.2"
+
+      - name: Substring Output name
+        id: substring-result
+        uses: actions/github-script@0.9.0
+        with:
+          result-encoding: string
+          script: |
+            core.setOutput('id', '${{ steps.sign_app.outputs.signedReleaseFile }}'.replace('app/build/outputs/apk/release/', ''));
+
+      - name: Create Release ✅
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload staging APK to GitHub artifacts
+        id: upload-staging-asset
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-staging.apk
+          path: ${{ env.STAGING_APK_PATH }}
+
+      - name: Upload release APK to GitHub artifacts
+        id: upload-release-asset
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: ${{ env.RELEASE_APK_PATH }}
+
+#      - name: Upload Signed Android APK 🗳
+#        id: upload-release-asset
+#        uses: sekwah41/upload-release-assets@v1.1.0
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+#          asset_name: ${{ steps.substring-result.outputs.id }}
+#          asset_content_type: application/apk
+
+#      - name: Ping Slack Release Android APK Failed
+#        uses: someimportantcompany/github-actions-slack-message@v1
+#        if: failure()
+#        with:
+#          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+#          text: |
+#            *Release Android APK failed*
+#          color: failure
