@@ -1,9 +1,6 @@
 name: Run Android Lint
 on:
   workflow_call:
-    secrets:
-      SLACK_WEBHOOK:
-        required: true
 
 jobs:
   lint:
