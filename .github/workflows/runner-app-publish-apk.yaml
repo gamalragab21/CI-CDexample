@@ -19,8 +19,8 @@ on:
           description: Staging url link
           value: ${{ jobs.publish.outputs.staging_url }}
 env:
-  STAGING_APK_PATH: app/build/outputs/apk/staging/app-staging.apk
-  RELEASE_APK_PATH: app/build/outputs/apk/release/app-release.apk
+  STAGING_APK_PATH: app/build/outputs/apk/staging
+  RELEASE_APK_PATH: app/build/outputs/apk/release
 
 jobs:
 
