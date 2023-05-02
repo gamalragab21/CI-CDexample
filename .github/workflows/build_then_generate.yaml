@@ -1,0 +1,32 @@
+name: Android CI/CD
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build and Test App
+    runs-on: ubuntu-latest
+
+    steps:
+      - workflow-lint:
+          uses: ./.github/workflows/runner-app-lint.yaml
+
+      - workflow-unit-test:
+         needs: [ workflow-lint ]
+         uses: ./.github/workflows/runner-app-test-unit.yaml
+
+      - workflow-android-test:
+          needs: [ workflow-unit-test ]
+          uses: ./.github/workflows/runner-app-test-android.yaml
+
+      - workflow-publish:
+        needs: [ workflow-lint, workflow-unit-test,workflow-android-test ]
+        uses: ./.github/workflows/runner-app-publish-apk.yaml
+        secrets:
+          SIGNING_KEY_BASE_64: "BASE64_ENCODED_SIGNING_KEY"
+          KEY_ALIAS: "KEY_ALIAS"
+          STORE_PASSWORD: "STORE_PASSWORD"
+          KEY_PASSWORD: "KEY_PASSWORD"
