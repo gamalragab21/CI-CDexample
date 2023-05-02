@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  start:
     name: Build and Test App
     runs-on: ubuntu-latest
 
