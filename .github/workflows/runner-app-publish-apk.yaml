@@ -125,9 +125,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: app-release.apk
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          asset_name: ${{ steps.substring-result.outputs.id }}
+          path: app/build/outputs/apk/release/app-release-signed.apk
           asset_content_type: application/apk
 
 #      - name: Upload Signed Android APK 🗳
