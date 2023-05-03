@@ -3,6 +3,11 @@ name: Manual Workflow
 on:
   workflow_dispatch:
 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
 upload-firebase:
   name: Upload App to Firebase App Distribution
   runs-on: ubuntu-latest
