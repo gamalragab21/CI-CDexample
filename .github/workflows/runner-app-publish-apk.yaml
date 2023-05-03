@@ -149,4 +149,4 @@ jobs:
 #          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
 #          text: |
 #            *Release Android APK failed*
-#          color: failure
+##          color: failure
