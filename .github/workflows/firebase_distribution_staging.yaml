@@ -4,13 +4,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Download APK from GitHub release
+        uses: actions/download-artifact@v2
+        with:
+          name: app-release-signed
+          path: app/
+          ref: ${{ github.event.release.tag_name }}
 
-      # Add your build steps here
+      - name: Install and configure Firebase CLI
+        uses: firebase/firebase-cli@v1.2.0
+        with:
+          args: 'deploy --only hosting'
+        env:
+          FIREBASE_CLI_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
-      - name: Notify on completion
-        run: echo "Build completed successfully"
+      - name: Upload APK to Firebase App Distribution
+        uses: firebase/app-distribution-upload@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          apkPath: app/app-release-signed.apk
+          releaseNotesFile: app/release_notes.txt
