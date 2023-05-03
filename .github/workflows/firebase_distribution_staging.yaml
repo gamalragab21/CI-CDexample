@@ -23,9 +23,9 @@ jobs:
       - name: Download APK from last release
         uses: actions/download-artifact@v2
         with:
-          name: app-release-signed.apk
+          name: app-release-signed
           path: app-release-signed.apk
-          url: https://github.com/gamalragab21/CI-CDexample/releases/latest/download/app-release-signed.apk
+          url: https://github.com/gamalragab21/CI-CDexample/releases/latest/
           token: ${{ secrets.GITHUB_TOKEN }}
 
 #      - name: Download APK from last release
