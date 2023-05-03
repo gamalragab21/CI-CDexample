@@ -16,6 +16,20 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
+      - name: Install dependencies
+        run: npm install @actions/github
+
+      - name: Download APK from Release
+        uses: actions/github@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: gamalragab21/CI-CDexample
+          path: app-release-signed.apk
+          ref: refs/tags/$(git describe --abbrev=0 --tags)
+
+      - name: Save APK to directory
+        run: mv app-release-signed.apk apk/
+
       - name: Download APK from Release
         uses: actions/download-artifact@v2
         with:
