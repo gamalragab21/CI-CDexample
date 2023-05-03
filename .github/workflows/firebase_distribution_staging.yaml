@@ -24,13 +24,22 @@ jobs:
       - name: Install dependencies
         run: npm install @actions/github
 
-      - name: Download APK from Release
-        uses: actions/github@v1.0.0
+      - name: Download APK asset from latest release
+        id: download-apk
+        uses: dawidd6/action-download-artifact@v2.7.3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: gamalragab21/CI-CDexample
-          path: app-release-signed.apk
-          ref: refs/tags/$(git describe --abbrev=0 --tags)
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: runner-app-publish-apk.yaml # the workflow file name where the artifact was created
+          name: app-release-signed # the name of the artifact you want to download
+          path: app/
+
+#      - name: Download APK from Release
+#        uses: actions/github@v1.0.0
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          repository: gamalragab21/CI-CDexample
+#          path: app-release-signed.apk
+#          ref: refs/tags/$(git describe --abbrev=0 --tags)
 
       - name: Save APK to directory
         run: mv app-release-signed.apk apk/
