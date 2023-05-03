@@ -16,12 +16,21 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: Download APK from GitHub release
+      - name: Download APK from latest release
         uses: actions/download-artifact@v2
         with:
           name: app-release-signed
           path: app/
-          ref: ${{ github.event.release.tag_name }}
+          url: https://api.github.com/repos/gamalragab21/CI-CDexample/releases/latest
+          headers: '{"Accept": "application/vnd.github.v3+json"}'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+#      - name: Download APK from GitHub release
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: app-release-signed
+#          path: app/
+#          ref: ${{ github.event.release.tag_name }}
 
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1.5.0
