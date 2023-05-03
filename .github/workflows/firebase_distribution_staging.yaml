@@ -20,7 +20,7 @@ jobs:
         run: npm install @actions/github
 
       - name: Download APK from Release
-        uses: actions/github@v4
+        uses: actions/github@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: gamalragab21/CI-CDexample
