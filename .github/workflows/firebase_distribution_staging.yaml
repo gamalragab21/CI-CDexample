@@ -16,22 +16,16 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - name: Download APK from last release
+        uses: actions/download-artifact@v2
         with:
-          node-version: '14.x'
-
-      - name: Install dependencies
-        run: npm install @actions/github
-
-      - name: Download APK asset from latest release
-        id: download-apk
-        uses: actions/download-artifact
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: runner-app-publish-apk.yaml # the workflow file name where the artifact was created
-          name: app-release-signed # the name of the artifact you want to download
+          name: app-release-signed
           path: app/
+          ref: ${{ github.event.repository.tags_url }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Display the downloaded file
+        run: ls -la app
 
 #      - name: Download APK from Release
 #        uses: actions/github@v1.0.0
