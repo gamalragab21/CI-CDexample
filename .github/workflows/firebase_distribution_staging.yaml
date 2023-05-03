@@ -17,26 +17,38 @@ jobs:
           distribution: 'corretto'
 
       - name: Download APK from latest release
-        uses: actions/download-artifact@v2
+        uses: actions/github-script@v4
         with:
-          name: app-release-signed
-          path: app/
-          url: https://api.github.com/repos/gamalragab21/CI-CDexample/releases/latest
-          headers: '{"Accept": "application/vnd.github.v3+json"}'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+              const release = await github.repos.getLatestRelease({
+                owner: 'gamalragab21',
+                repo: 'CI-CDexample'
+              });
+              const asset = release.data.assets.find(a => a.name === 'app-release-signed.apk');
+              if (!asset) {
+                throw new Error('APK asset not found in release');
+              }
+              const url = asset.browser_download_url;
+              const response = await fetch(url);
+              if (!response.ok) {
+                throw new Error('Failed to download APK asset');
+              }
+              await fs.promises.writeFile('app-release-signed.apk', await response.buffer());
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#      - name: Download APK from GitHub release
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: app-release-signed
-#          path: app/
-#          ref: ${{ github.event.release.tag_name }}
+      #      - name: Download APK from GitHub release
+      #        uses: actions/download-artifact@v2
+      #        with:
+      #          name: app-release-signed
+      #          path: app/
+      #          ref: ${{ github.event.release.tag_name }}
 
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1.5.0
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
-#          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          #          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
           groups: qa
           file: app/app-release-signed.apk
 
