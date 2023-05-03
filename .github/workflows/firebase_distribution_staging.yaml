@@ -14,6 +14,9 @@ jobs:
           path: app/
           ref: ${{ github.event.release.tag_name }}
 
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
       - name: Install and configure Firebase CLI
         uses: firebase/firebase-cli@v1.2.0
         with:
