@@ -16,6 +16,11 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
       - name: Install dependencies
         run: npm install @actions/github
 
@@ -30,13 +35,13 @@ jobs:
       - name: Save APK to directory
         run: mv app-release-signed.apk apk/
 
-      - name: Download APK from Release
-        uses: actions/download-artifact@v2
-        with:
-          name: app-release-signed
-          path: app/
-          url: https://api.github.com/repos/gamalragab21/CI-CDexample/releases/latest
-          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Download APK from Release
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: app-release-signed
+#          path: app/
+#          url: https://api.github.com/repos/gamalragab21/CI-CDexample/releases/latest
+#          token: ${{ secrets.GITHUB_TOKEN }}
 
       #      - name: Download APK from GitHub release
       #        uses: actions/download-artifact@v2
