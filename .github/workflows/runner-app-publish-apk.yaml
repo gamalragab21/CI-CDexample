@@ -115,8 +115,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: app-staging.apk
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.sign-staging.outputs.signedReleaseFile }}
+          path: app/build/outputs/apk/staging/app-staging-signed.apk
           asset_content_type: application/apk
 
       - name: Upload release APK to GitHub artifacts
