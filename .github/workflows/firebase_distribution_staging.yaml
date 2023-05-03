@@ -1,0 +1,16 @@
+name: Manual Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Add your build steps here
+
+      - name: Notify on completion
+        run: echo "Build completed successfully"
