@@ -63,7 +63,7 @@ jobs:
       - name: Generate release APK
         run: ./gradlew assembleRelease
 
-#      - name: Signing staging APK
+##      - name: Signing staging APK
 #        id: sign-staging
 #        uses: r0adkll/sign-android-release@v1
 #        with:
