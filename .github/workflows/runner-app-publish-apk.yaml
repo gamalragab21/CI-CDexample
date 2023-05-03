@@ -116,7 +116,7 @@ jobs:
         with:
           asset_name: app-staging.apk
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.sign_staging.outputs.signedReleaseFile }}
+          asset_path: app/build/outputs/apk/staging/app-staging-signed.apk
           asset_content_type: application/apk
 
       - name: Upload release APK to GitHub artifacts
