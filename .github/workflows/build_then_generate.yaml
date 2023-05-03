@@ -23,7 +23,7 @@ jobs:
     uses: ./.github/workflows/runner-app-publish-apk.yaml
     secrets:
       SIGNING_KEY_BASE_64: "BASE64_ENCODED_SIGNING_KEY"
-      KEY_ALIAS: "KEY_ALIAS"
-      STORE_PASSWORD: "STORE_PASSWORD"
-      KEY_PASSWORD: "KEY_PASSWORD"
+      KEY_ALIAS: "key0"
+      STORE_PASSWORD: "123456789"
+      KEY_PASSWORD: "key123456"
 ##
