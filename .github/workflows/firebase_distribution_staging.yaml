@@ -41,8 +41,8 @@ jobs:
 #          path: app-release-signed.apk
 #          ref: refs/tags/$(git describe --abbrev=0 --tags)
 
-      - name: Save APK to directory
-        run: mv app-release-signed.apk apk/
+#      - name: Save APK to directory
+#        run: mv app-release-signed.apk apk/
 
 #      - name: Download APK from Release
 #        uses: actions/download-artifact@v2
