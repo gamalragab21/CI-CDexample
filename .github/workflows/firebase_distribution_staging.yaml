@@ -16,26 +16,13 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: Download APK from latest release
-        uses: actions/github-script@v4
+      - name: Download APK from Release
+        uses: actions/download-artifact@v2
         with:
-          script: |
-              const release = await github.repos.getLatestRelease({
-                owner: 'gamalragab21',
-                repo: 'CI-CDexample'
-              });
-              const asset = release.data.assets.find(a => a.name === 'app-release-signed.apk');
-              if (!asset) {
-                throw new Error('APK asset not found in release');
-              }
-              const url = asset.browser_download_url;
-              const response = await fetch(url);
-              if (!response.ok) {
-                throw new Error('Failed to download APK asset');
-              }
-              await fs.promises.writeFile('app-release-signed.apk', await response.buffer());
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: app-release-signed
+          path: app/
+          url: https://api.github.com/repos/gamalragab21/CI-CDexample/releases/latest
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       #      - name: Download APK from GitHub release
       #        uses: actions/download-artifact@v2
