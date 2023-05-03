@@ -16,8 +16,8 @@ on:
         description: Release url link
         value: ${{ jobs.publish.outputs.release_url }}
       staging_url:
-          description: Staging url link
-          value: ${{ jobs.publish.outputs.staging_url }}
+        description: Staging url link
+        value: ${{ jobs.publish.outputs.staging_url }}
 env:
   STAGING_APK_PATH: app/build/outputs/apk/staging
   RELEASE_APK_PATH: app/build/outputs/apk/release
@@ -108,15 +108,14 @@ jobs:
           draft: false
           prerelease: false
 
-      - name:  Upload Staging APK Artifact 📦
+      - name: Upload Staging APK Artifact 📦
         id: upload-staging-asset
         uses: actions/upload-artifact@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_name: app-staging.apk
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/build/outputs/apk/staging/app-staging-signed.apk
+          name: app-staging.apk
+          path: app/build/outputs/apk/staging/app-staging-signed.apk
           asset_content_type: application/apk
 
       - name: Upload release APK to GitHub artifacts
